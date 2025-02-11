@@ -16,11 +16,12 @@ Ou pode-se customizar para que o mesmo possua perssistencia e ssl proprietario:
 ``` yaml
 docker run -d --restart=unless-stopped \
 -p 80:80 -p 443:443 \
+-e TZ="America/Fortaleza" \
 -v /home/seac/rancher/ssl/cert.pem:/etc/rancher/ssl/cert.pem \
 -v /home/seac/rancher/ssl/key.pem:/etc/rancher/ssl/key.pem \
 -v /home/seac/rancher/ssl/cacerts.pem:/etc/rancher/ssl/cacerts.pem \
 -v /home/seac/rancher/persistente:/var/lib/rancher \
---privileged rancher/rancher
+--privileged rancher/rancher:v2.10.2
 ```
 
 # Capturando a senha inicial de configuração do dashboard:
