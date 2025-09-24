@@ -1,0 +1,19 @@
+apiVersion: v1
+data:
+
+  load-balance: "roundrobin"
+  log-format: "%ci:%cp [%tr] %ft %b/%s %TR/%Tw/%Tc/%Tr/%Ta %ST %B %CC %CS %tsc %ac/%fc/%bc/%sc/%rc %sq/%bq %hr %hs \"%HM %[var(txn.base)] %HV\""
+  timeout-client: "240s"
+  timeout-connect: "240s"
+  timeout-server: "240s"
+kind: ConfigMap
+metadata:
+  name: haproxy-kubernetes-ingress
+  namespace: haproxy-controller
+  labels:
+    app.kubernetes.io/instance: haproxy-kubernetes-ingress
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kubernetes-ingress
+  annotations:
+    meta.helm.sh/release-name: haproxy-kubernetes-ingress
+    meta.helm.sh/release-namespace: haproxy-controller
