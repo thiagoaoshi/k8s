@@ -1,0 +1,8 @@
+controller:
+  hostNetwork: true
+  ingressClassResource:
+    enabled: true
+  extraArgs:
+  - --configmap=haproxy-controller/haproxy-kubernetes-ingress
+# Definindo o certificado default
+  - --default-ssl-certificate=haproxy-controller/ingress-cert-wildcard-seu-dominio-com-br
