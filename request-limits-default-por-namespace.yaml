@@ -1,0 +1,16 @@
+# testes de limits e requests para memoria
+
+# Modelo para default memory
+# ex: kubectl delete -f homologacao.yaml --namespace <seu-namespace>
+# ex: kubectl get limitrange -A
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: mem-limit-range
+spec:
+  limits:
+  - default:
+      memory: 512Mi
+    defaultRequest:
+      memory: 20Mi
+    type: Container
