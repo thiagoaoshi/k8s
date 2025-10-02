@@ -1,14 +1,14 @@
 #!/bin/bash
-# Upgrade do control plane e seus recursos, executar como root.
+# Upgrade do control plane nós secundarios.
 # OBS: deve ser executado um node por vez, garantindo o estado do node, seguir para o próximo.
 # Variavies globais
 NODE_NAME=${1:-$HOSTNAME}
-KUBEADM_VERSION="1.30.7"
-KUBELET_VERSION="1.30.7"
-KUBECTL_VERSION="1.30.7"
+KUBEADM_VERSION="1.31.13"
+KUBELET_VERSION="1.31.13"
+KUBECTL_VERSION="1.31.13"
 # VERSOES DOS PACOTES, tem que ser a versão base da familia !
-CRIO_VERSION=v1.30
-KUBERNETES_VERSION=v1.30
+CRIO_VERSION=v1.31
+KUBERNETES_VERSION=v1.31
 # VALIDACOES E AVISOS
 echo -e "Antes de atualizar o kubernetes, tenha certeza que a versao a ser atualizada é compativel com a versão do CILIUM instalada! \n"
 cilium version
@@ -39,16 +39,14 @@ echo -e "versao instalada: \n"
 crio version | grep Version:
 # Upgrade KUBEADM
 echo -e "> Upgrade kubeadm...\n"
+# Valide a ultima versao
+apt-cache madison kubeadm
+echo -e "DIGITE ** CTRL + C ** para parar o script ou...\n"
+read -n1 -r -p "A ultima versao apresentada é a definida na variavel ? Se sim, precione qualquer tecla para continuar..." key
+
 apt-mark unhold kubeadm && apt-get install -y kubeadm="'${KUBEADM_VERSION}'" && apt-mark hold kubeadm
 echo  "Upgrade para versao: `kubeadm version`"
 echo
-# Upgrade KUBELET and KUBECTL
-echo -e "> Upgrade kubelet and kubectl\n"
-apt-mark unhold kubelet kubectl && apt-get install -y kubelet="'${KUBELET_VERSION}'"  kubectl="'${KUBECTL_VERSION}'"  && apt-mark hold kubelet kubectl
-echo
-# Restart kubelet
-systemctl daemon-reload &&  systemctl restart kubelet
-echo -e "daemon reloaded e kubelet reiniciado \n"
 # Upgrade plan
 echo -e "> Baixando imagem...\n"
 # Download das imagens antes de aplicar (diminui o tempo)
@@ -57,8 +55,16 @@ kubeadm config images pull
 echo -e "> Aplicando upgrade no node...\n"
 kubeadm upgrade node
 echo
+# Upgrade KUBELET and KUBECTL
+echo -e "> Upgrade kubelet and kubectl\n"
+apt-mark unhold kubelet kubectl && apt-get install -y kubelet="'${KUBELET_VERSION}'"  kubectl="'${KUBECTL_VERSION}'"  && apt-mark hold kubelet kubectl
+echo
+# Restart kubelet
+systemctl daemon-reload &&  systemctl restart kubelet
+echo -e "daemon reloaded e kubelet reiniciado \n"
 # Uncordon do node
 echo -e "> Removendo node do modo manutencao...\n"
 kubectl uncordon ${NODE_NAME}
 #
 echo -e "\nControl plane ${HOSTNAME} \e[32msuccessfuly\e[0m upgraded\n"
+echo -e "> Validar RABBITMQ e VAULT ao termino do upgrade :...\n"
